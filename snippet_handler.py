@@ -85,8 +85,20 @@ class SnippetsSearch:
         return self.snippets[name].render()
 
     def search_snippet(self, term):
-        choices = [s.search_term for s in self.snippets.values()]
-        results = process.extract(term, choices, scorer=fuzz.partial_token_sort_ratio, score_cutoff=20)
+        snippet_choice_pair = {
+           s.search_term: s
+           for s in self.snippets.values()
+        }
+
+        # Get ranked results by search term
+        results = process.extract(term, snippet_choice_pair.keys(), scorer=fuzz.partial_token_sort_ratio, score_cutoff=20)
+        
+        # Get snippets instead of search term...
+        results = [
+            (snippet_choice_pair[r[0]], *r[1:])
+            for r in results
+        ]
+        
         return results
 
 if __name__ == "__main__":

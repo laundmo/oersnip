@@ -2,6 +2,7 @@ from PySide6 import QtCore, QtWidgets, QtGui
 from pynput import keyboard
 from snippet_handler import SnippetsSearch
 import os
+import pyperclip
 
 windows = False
 if os.name == "nt":
@@ -9,28 +10,33 @@ if os.name == "nt":
     win32gui.SystemParametersInfo(win32con.SPI_SETFOREGROUNDLOCKTIMEOUT, 0, win32con.SPIF_SENDWININICHANGE | win32con.SPIF_UPDATEINIFILE)
     windows = True
 
-class MyLineEdit(QtWidgets.QLineEdit):
-    def focusOutEvent(self, event):
-        self.parentWidget().toggle_visible()
-        
 class MyWidget(QtWidgets.QWidget):
     def __init__(self, search):
         super().__init__()
 
         self.button = QtWidgets.QPushButton("Hide!")
-        self.input = MyLineEdit()
+        self.input = QtWidgets.QLineEdit(self)
+        self.list_view = QtWidgets.QListWidget()
+
         self.layout = QtWidgets.QVBoxLayout(self)
         self.layout.addWidget(self.button)
         self.layout.addWidget(self.input)
+        self.layout.addWidget(self.list_view)
 
         self.button.clicked.connect(self.toggle_visible)
         self.input.textChanged.connect(self.input_text_changed)
+        self.list_view.itemClicked.connect(self.snippet_selected)
         
         self.search = search
         self.input.setWindowModality(QtCore.Qt.ApplicationModal)
         self.setWindowState(QtCore.Qt.WindowActive)
         self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
+    
+    def create_list_item(self, text):
+        item = QtWidgets.QListWidgetItem(text)
+
+        return item
     
     @QtCore.Slot()
     def toggle_visible(self):
@@ -48,6 +54,7 @@ class MyWidget(QtWidgets.QWidget):
                     win32process.AttachThreadInput(fg, current, True)
                     win32gui.SetForegroundWindow(self.winId())
                     win32process.AttachThreadInput(fg, win32api.GetCurrentThreadId(), False)
+            
             self.activateWindow()
             self.input.raise_()
             self.input.grabKeyboard()
@@ -55,7 +62,20 @@ class MyWidget(QtWidgets.QWidget):
     
     @QtCore.Slot()
     def input_text_changed(self, text):
-        self.search.search_snippet(text)
+        self.list_view.clear()
+
+        for snippet, _, _ in self.search.search_snippet(text):
+            self.list_view.addItem(self.create_list_item(snippet.name))
+    
+    # TODO: Create custom list widget item that can provide title for
+    # snippets that aren't strictly text (images, etc)
+    @QtCore.Slot()
+    def snippet_selected(self, item: QtWidgets.QListWidgetItem):
+        # Copy text to window
+        pyperclip.copy(self.search.render_snippet(item.text()))
+        self.input.clear()
+        self.toggle_visible()
+        
 
 class KeybindPressed(QtCore.QObject):
     keybind_pressed = QtCore.Signal()
