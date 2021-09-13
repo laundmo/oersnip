@@ -2,7 +2,7 @@ from typing import List
 from jinja2 import Environment as JinjaEnvironment, select_autoescape
 from jinja2.loaders import FunctionLoader
 
-from environments import envs
+from .environments import envs
 from pathlib import Path
 
 from functools import partial

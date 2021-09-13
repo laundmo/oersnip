@@ -10,7 +10,7 @@ envs = {}
 
 for module in module_names:
     try:
-        mod = importlib.import_module("." + module, "environments")
+        mod = importlib.import_module("." + module, "oersnip.environments")
     except ImportError as e:
         print(e)
     else:

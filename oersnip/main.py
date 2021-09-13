@@ -3,8 +3,8 @@ import pyperclip
 from pynput import keyboard
 from PySide6 import QtCore, QtGui, QtWidgets
 
-from snippet_handler import SnippetsSearch
-from utils import force_focus_windows
+from .snippet_handler import SnippetsSearch
+from .utils import force_focus_windows
 
 class MyWidget(QtWidgets.QWidget):
     def __init__(self, search):
@@ -69,8 +69,7 @@ class KeybindPressed(QtCore.QObject):
     def __call__(self):
         self.keybind_pressed.emit()
 
-
-if __name__ == "__main__":
+def run():
     app = QtWidgets.QApplication([])
     search = SnippetsSearch()
 
@@ -83,3 +82,6 @@ if __name__ == "__main__":
         widget.show()
 
         app.exec()
+
+if __name__ == "__main__":
+    run()
