@@ -11,3 +11,8 @@ test:
     and uses the jinja syntax
     heres your clipboard:
     {{CLIPBOARD}}
+current_time:
+  tags:
+  required_envs:
+    - datetime
+  template: The current time is {{TIME}}

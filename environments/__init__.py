@@ -2,7 +2,8 @@ import importlib
 
 module_names = [
     "environ",
-    "clipboard"
+    "clipboard",
+    "datetime"
 ]
 
 envs = {}
