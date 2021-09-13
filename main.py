@@ -1,14 +1,10 @@
-from PySide6 import QtCore, QtWidgets, QtGui
-from pynput import keyboard
-from snippet_handler import SnippetsSearch
-import os
-import pyperclip
 
-windows = False
-if os.name == "nt":
-    import win32gui, win32con, win32process, win32api
-    win32gui.SystemParametersInfo(win32con.SPI_SETFOREGROUNDLOCKTIMEOUT, 0, win32con.SPIF_SENDWININICHANGE | win32con.SPIF_UPDATEINIFILE)
-    windows = True
+import pyperclip
+from pynput import keyboard
+from PySide6 import QtCore, QtGui, QtWidgets
+
+from snippet_handler import SnippetsSearch
+from utils import force_focus_windows
 
 class MyWidget(QtWidgets.QWidget):
     def __init__(self, search):
@@ -46,15 +42,7 @@ class MyWidget(QtWidgets.QWidget):
         else:
             print("Showing popup")
             self.show()
-            if windows:
-                fgwin = win32gui.GetForegroundWindow()
-                fg = win32process.GetWindowThreadProcessId(fgwin)[0]
-                current = win32api.GetCurrentThreadId()
-                if current != fg:
-                    win32process.AttachThreadInput(fg, current, True)
-                    win32gui.SetForegroundWindow(self.winId())
-                    win32process.AttachThreadInput(fg, win32api.GetCurrentThreadId(), False)
-            
+            force_focus_windows(self.winId())
             self.activateWindow()
             self.input.raise_()
             self.input.grabKeyboard()
@@ -75,8 +63,6 @@ class MyWidget(QtWidgets.QWidget):
         pyperclip.copy(self.search.render_snippet(item.text()))
         self.input.clear()
         self.toggle_visible()
-        
-
 class KeybindPressed(QtCore.QObject):
     keybind_pressed = QtCore.Signal()
 
