@@ -62,7 +62,7 @@ class Snippet:
 
 
 class SnippetsSearch:
-    snippet_path = Path("snippets")
+    snippet_path = Path("oersnip") / "snippets"
 
     def __init__(self):
         self.snippets = {}  # TODO: make snippets hot-reloadable
@@ -96,6 +96,10 @@ class SnippetsSearch:
 
     def search_snippet(self, term):
         snippet_choice_pair = {s.search_term: s for s in self.snippets.values()}
+
+        # return all when no search term is provided
+        if term == "":
+            return [(v, 0, 0) for k, v in snippet_choice_pair.items()]
 
         # Get ranked results by search term
         results = process.extract(
