@@ -1,10 +1,10 @@
-
 import pyperclip
 from pynput import keyboard
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from .snippet_handler import SnippetsSearch
 from .utils import force_focus_windows
+
 
 class MyWidget(QtWidgets.QWidget):
     def __init__(self, search):
@@ -22,18 +22,18 @@ class MyWidget(QtWidgets.QWidget):
         self.button.clicked.connect(self.toggle_visible)
         self.input.textChanged.connect(self.input_text_changed)
         self.list_view.itemClicked.connect(self.snippet_selected)
-        
+
         self.search = search
         self.input.setWindowModality(QtCore.Qt.ApplicationModal)
         self.setWindowState(QtCore.Qt.WindowActive)
         self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
-    
+
     def create_list_item(self, text):
         item = QtWidgets.QListWidgetItem(text)
 
         return item
-    
+
     @QtCore.Slot()
     def toggle_visible(self):
         if self.isVisible():
@@ -47,14 +47,14 @@ class MyWidget(QtWidgets.QWidget):
             self.input.raise_()
             self.input.grabKeyboard()
             self.input.setFocus()
-    
+
     @QtCore.Slot()
     def input_text_changed(self, text):
         self.list_view.clear()
 
         for snippet, _, _ in self.search.search_snippet(text):
             self.list_view.addItem(self.create_list_item(snippet.name))
-    
+
     # TODO: Create custom list widget item that can provide title for
     # snippets that aren't strictly text (images, etc)
     @QtCore.Slot()
@@ -63,11 +63,14 @@ class MyWidget(QtWidgets.QWidget):
         pyperclip.copy(self.search.render_snippet(item.text()))
         self.input.clear()
         self.toggle_visible()
+
+
 class KeybindPressed(QtCore.QObject):
     keybind_pressed = QtCore.Signal()
 
     def __call__(self):
         self.keybind_pressed.emit()
+
 
 def run():
     app = QtWidgets.QApplication([])
@@ -82,6 +85,7 @@ def run():
         widget.show()
 
         app.exec()
+
 
 if __name__ == "__main__":
     run()

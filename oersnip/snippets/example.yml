@@ -3,7 +3,7 @@ test:
     - test
     - discord
     - idfk
-  required_envs: 
+  required_envs:
     - clipboard
   template: |
     This is a test template

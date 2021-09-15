@@ -1,10 +1,6 @@
 import importlib
 
-module_names = [
-    "environ",
-    "clipboard",
-    "datetime"
-]
+module_names = ["environ", "clipboard", "datetime"]
 
 envs = {}
 

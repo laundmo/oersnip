@@ -7,7 +7,7 @@ Literally ignore this repo for now please.
 
 ## dev-usage
 
-use poetry to create a venv and install dependencies 
+use poetry to create a venv and install dependencies
 ```
 poetry install
 ```
